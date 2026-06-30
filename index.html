@@ -1011,7 +1011,6 @@
     const lit = i <= stats.longestStreak;
     questEl.appendChild(makeSeg(makeHoopSVG(lit, bestColor), i, lit ? 'lit' : 'dark-label'));
   }
-  }
 
   // Callout — find how many times best streak was hit and at which days
   const bestRuns = stats.streakRuns.filter(r => r.length === stats.longestStreak);
