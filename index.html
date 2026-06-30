@@ -369,113 +369,6 @@
     .legend-dot.made { background: var(--led-green); box-shadow: 0 0 6px var(--led-green); }
     .legend-dot.pending { background: var(--surface2); border: 1px solid var(--border); }
 
-    /* ─── Current-run tracker ────────────────────────────────────── */
-    .run-tracker-block {
-      margin-top: 40px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-    }
-
-    .run-tracker-row {
-      display: flex;
-      align-items: center;
-      padding: 20px 24px;
-      gap: 20px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .run-tracker-row:last-child { border-bottom: none; }
-
-    .run-tracker-meta {
-      flex-shrink: 0;
-      width: 96px;
-      text-align: right;
-    }
-
-    .run-tracker-meta-label {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 9px;
-      letter-spacing: 0.2em;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-
-    .run-tracker-meta-count {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 1.4rem;
-      line-height: 1;
-    }
-
-    .run-tracker-meta-count.best  { color: var(--led-green); text-shadow: 0 0 8px rgba(57,255,71,0.4); }
-    .run-tracker-meta-count.current { color: var(--led-red); text-shadow: 0 0 8px rgba(255,40,40,0.3); }
-    .run-tracker-meta-count.current-active { color: var(--led-green); text-shadow: 0 0 8px rgba(57,255,71,0.4); }
-
-    .run-tracker-meta-count .count-denom {
-      font-size: 0.55em;
-      opacity: 0.5;
-    }
-
-    .run-pips {
-      display: flex;
-      gap: 5px;
-      flex: 1;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-    }
-
-    .run-pip {
-      flex-shrink: 0;
-      width: 28px;
-      height: 28px;
-      border-radius: 2px;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-mono);
-      font-size: 9px;
-      color: var(--text-dim);
-      position: relative;
-    }
-
-    @media (max-width: 480px) {
-      .run-pip { width: 22px; height: 22px; font-size: 8px; }
-      .run-pips { gap: 3px; }
-      .run-tracker-meta { width: 72px; }
-    }
-
-    .run-pip.filled-best {
-      background: var(--led-dim);
-      border-color: rgba(57,255,71,0.35);
-      color: var(--led-green);
-    }
-
-    .run-pip.filled-current {
-      background: var(--led-dim);
-      border-color: var(--led-green);
-      color: var(--led-green);
-      box-shadow: 0 0 6px rgba(57,255,71,0.2);
-    }
-
-    .run-pip.goal-marker {
-      border-color: var(--orange);
-      color: var(--orange);
-      background: var(--orange-dim);
-    }
-
-    .run-tracker-note {
-      padding: 14px 24px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-dim);
-      letter-spacing: 0.04em;
-      background: #0d0d0d;
-      text-align: center;
-    }
-
     .quest-callout {
       text-align: center;
       margin-top: 24px;
@@ -827,9 +720,7 @@
         </span>
       </div>
 
-      <div class="run-tracker-block" id="run-tracker-block" role="region" aria-label="Streak progress tracker"></div>
-
-      <div class="quest-callout" id="quest-callout">
+<div class="quest-callout" id="quest-callout">
         <span class="callout-stat" id="callout-stat">—</span>
         <span class="callout-note" id="callout-note">—</span>
       </div>
@@ -1223,63 +1114,6 @@
     calloutNote.textContent =
       `Personal best: ${runDesc}. The next shot, on each occasion, was a miss.`;
   }
-
-  // ── Run tracker (best run + current run pip rows) ─────────────────
-
-  (function buildRunTracker() {
-    const block = document.getElementById('run-tracker-block');
-    const GOAL = 10;
-
-    function makeRow(labelText, count, pipClass, countClass) {
-      const row = document.createElement('div');
-      row.className = 'run-tracker-row';
-
-      const meta = document.createElement('div');
-      meta.className = 'run-tracker-meta';
-      meta.innerHTML = `
-        <span class="run-tracker-meta-label">${labelText}</span>
-        <span class="run-tracker-meta-count ${countClass}">${count}<span class="count-denom"> / ${GOAL}</span></span>
-      `;
-
-      const pips = document.createElement('div');
-      pips.className = 'run-pips';
-
-      for (let i = 1; i <= GOAL; i++) {
-        const pip = document.createElement('div');
-        pip.setAttribute('aria-label', `Shot ${i} of ${GOAL}`);
-        if (i <= count) {
-          pip.className = `run-pip ${pipClass}`;
-          pip.textContent = i;
-        } else if (i === GOAL) {
-          pip.className = 'run-pip goal-marker';
-          pip.textContent = '★';
-        } else {
-          pip.className = 'run-pip';
-          pip.textContent = i;
-        }
-        pips.appendChild(pip);
-      }
-
-      row.appendChild(meta);
-      row.appendChild(pips);
-      return row;
-    }
-
-    block.appendChild(makeRow('Best run', stats.longestStreak, 'filled-best', 'best'));
-    block.appendChild(makeRow('Current run', stats.currentStreak, 'filled-current',
-      stats.currentStreak > 0 ? 'current-active' : 'current'));
-
-    const note = document.createElement('div');
-    note.className = 'run-tracker-note';
-    if (stats.currentStreak === 0) {
-      note.textContent = 'Current streak reset. The record stands at ' + stats.longestStreak + '.';
-    } else if (stats.currentStreak === stats.longestStreak) {
-      note.textContent = `Matching the personal best. ${GOAL - stats.currentStreak} to go.`;
-    } else {
-      note.textContent = `Active streak: ${stats.currentStreak} consecutive. ${GOAL - stats.currentStreak} to go.`;
-    }
-    block.appendChild(note);
-  })();
 
   // ── Season grid ───────────────────────────────────────────────────
 
