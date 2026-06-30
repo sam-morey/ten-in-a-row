@@ -24,6 +24,8 @@
       --wood-grain: #a06030;
       --led-green:  #39ff47;
       --led-dim:    #0a2a0d;
+      --cyan:       #00d4ff;
+      --cyan-dim:   #002a33;
       --led-red:    #ff2828;
       --led-red-dim:#2d0606;
       --orange:     #ff6a00;
@@ -297,14 +299,14 @@
     }
 
     .hoop-icon {
-      width: 64px;
-      height: 72px;
+      width: 52px;
+      height: 58px;
       position: relative;
     }
 
     @media (max-width: 600px) {
-      .hoop-icon { width: 44px; height: 50px; }
-      .quest-tracker { gap: 4px; }
+      .hoop-icon { width: 36px; height: 40px; }
+      .quest-tracker { gap: 3px; }
     }
 
     .hoop-num {
@@ -314,32 +316,17 @@
       color: var(--text-dim);
     }
 
-    .hoop-num.lit { color: var(--led-green); }
+    .hoop-num.lit        { color: var(--led-green); }
     .hoop-num.dark-label { color: var(--text-dim); }
-
-    .current-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: transparent;
-      border: 1px solid #2a2a2a;
-      flex-shrink: 0;
-    }
-
-    .current-dot.active {
-      background: var(--led-green);
-      border-color: var(--led-green);
-      box-shadow: 0 0 6px var(--led-green), 0 0 12px rgba(57,255,71,0.4);
-    }
+    .hoop-num.current-label { color: var(--cyan); }
 
     .quest-divider {
-      width: 2px;
-      height: 40px;
+      width: 1px;
+      height: 48px;
       background: var(--border);
       flex-shrink: 0;
-      margin: 0 4px;
-      align-self: flex-start;
-      margin-top: 15px;
+      margin: 0 8px;
+      align-self: center;
     }
 
     .quest-legend {
@@ -707,16 +694,16 @@
 
       <div class="quest-legend">
         <span class="legend-item">
+          <span class="legend-dot" style="background:var(--cyan);box-shadow:0 0 6px var(--cyan)"></span>
+          Current run
+        </span>
+        <span class="legend-item">
           <span class="legend-dot made"></span>
           Best run confirmed
         </span>
         <span class="legend-item">
           <span class="legend-dot pending"></span>
           Unconquered
-        </span>
-        <span class="legend-item">
-          <span class="current-dot active" style="display:inline-block"></span>
-          Current run
         </span>
       </div>
 
@@ -958,146 +945,72 @@
   document.getElementById('footer-sub').textContent =
     `Season One · ${stats.total} days · ${stats.makes} makes`;
 
-  // ── Quest tracker (10 segments) ───────────────────────────────────
+  // ── Quest tracker ─────────────────────────────────────────────────
 
   const questEl = document.getElementById('quest-tracker');
   const GOAL = 10;
+  const svgNS = 'http://www.w3.org/2000/svg';
 
-  for (let i = 1; i <= GOAL; i++) {
-    const lit = i <= stats.longestStreak;
-    const seg = document.createElement('div');
-    seg.className = 'hoop-segment';
+  function el(tag, attrs, text) {
+    const e = document.createElementNS(svgNS, tag);
+    Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, String(v)));
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
 
-    // SVG hoop icon
-    const svgNS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(svgNS, 'svg');
-    svg.setAttribute('viewBox', '0 0 64 72');
-    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    svg.setAttribute('class', 'hoop-icon');
-    svg.setAttribute('aria-hidden', 'true');
-
+  function makeHoopSVG(lit, color) {
+    // color: { board, pole, rim, ball } — all CSS color strings
+    const svg = el('svg', { viewBox: '0 0 64 72', class: 'hoop-icon', 'aria-hidden': 'true' });
     if (lit) {
-      // Backboard
-      const board = document.createElementNS(svgNS, 'rect');
-      board.setAttribute('x', '18'); board.setAttribute('y', '2');
-      board.setAttribute('width', '28'); board.setAttribute('height', '20');
-      board.setAttribute('rx', '1');
-      board.setAttribute('fill', '#0a2a0d');
-      board.setAttribute('stroke', '#39ff47');
-      board.setAttribute('stroke-width', '1.5');
-      svg.appendChild(board);
-
-      // Inner box
-      const inner = document.createElementNS(svgNS, 'rect');
-      inner.setAttribute('x', '22'); inner.setAttribute('y', '5');
-      inner.setAttribute('width', '20'); inner.setAttribute('height', '13');
-      inner.setAttribute('rx', '0.5');
-      inner.setAttribute('fill', 'none');
-      inner.setAttribute('stroke', '#39ff47');
-      inner.setAttribute('stroke-width', '0.8');
-      svg.appendChild(inner);
-
-      // Pole
-      const pole = document.createElementNS(svgNS, 'rect');
-      pole.setAttribute('x', '30'); pole.setAttribute('y', '22');
-      pole.setAttribute('width', '4'); pole.setAttribute('height', '14');
-      pole.setAttribute('fill', '#39ff47');
-      svg.appendChild(pole);
-
-      // Rim
-      const rim = document.createElementNS(svgNS, 'ellipse');
-      rim.setAttribute('cx', '32'); rim.setAttribute('cy', '36');
-      rim.setAttribute('rx', '14'); rim.setAttribute('ry', '4');
-      rim.setAttribute('fill', 'none');
-      rim.setAttribute('stroke', '#ff6a00');
-      rim.setAttribute('stroke-width', '2.5');
-      svg.appendChild(rim);
-
-      // Net lines
+      svg.appendChild(el('rect',    { x:18, y:2, width:28, height:20, rx:1, fill: color.boardFill, stroke: color.board, 'stroke-width':1.5 }));
+      svg.appendChild(el('rect',    { x:22, y:5, width:20, height:13, rx:0.5, fill:'none', stroke: color.board, 'stroke-width':0.8 }));
+      svg.appendChild(el('rect',    { x:30, y:22, width:4, height:14, fill: color.pole }));
+      svg.appendChild(el('ellipse', { cx:32, cy:36, rx:14, ry:4, fill:'none', stroke: color.rim, 'stroke-width':2.5 }));
       for (let n = 0; n < 5; n++) {
         const nx = 20 + n * 6;
-        const line = document.createElementNS(svgNS, 'line');
-        line.setAttribute('x1', String(nx)); line.setAttribute('y1', '36');
-        line.setAttribute('x2', String(nx + (n - 2) * 1.5)); line.setAttribute('y2', '54');
-        line.setAttribute('stroke', '#39ff47');
-        line.setAttribute('stroke-width', '0.8');
-        line.setAttribute('opacity', '0.6');
-        svg.appendChild(line);
+        svg.appendChild(el('line', { x1:nx, y1:36, x2: nx+(n-2)*1.5, y2:54, stroke: color.board, 'stroke-width':0.8, opacity:0.6 }));
       }
-      // Net bottom
-      const nb = document.createElementNS(svgNS, 'line');
-      nb.setAttribute('x1', '22'); nb.setAttribute('y1', '54');
-      nb.setAttribute('x2', '42'); nb.setAttribute('y2', '54');
-      nb.setAttribute('stroke', '#39ff47');
-      nb.setAttribute('stroke-width', '0.8');
-      nb.setAttribute('opacity', '0.6');
-      svg.appendChild(nb);
-
-      // Ball
-      const ball = document.createElementNS(svgNS, 'circle');
-      ball.setAttribute('cx', '32'); ball.setAttribute('cy', '34');
-      ball.setAttribute('r', '8');
-      ball.setAttribute('fill', '#ff6a00');
-      svg.appendChild(ball);
-
-      // Ball glow
-      const glow = document.createElementNS(svgNS, 'circle');
-      glow.setAttribute('cx', '32'); glow.setAttribute('cy', '34');
-      glow.setAttribute('r', '9');
-      glow.setAttribute('fill', 'none');
-      glow.setAttribute('stroke', '#ff6a00');
-      glow.setAttribute('stroke-width', '1');
-      glow.setAttribute('opacity', '0.3');
-      svg.appendChild(glow);
-
+      svg.appendChild(el('line',   { x1:22, y1:54, x2:42, y2:54, stroke: color.board, 'stroke-width':0.8, opacity:0.6 }));
+      svg.appendChild(el('circle', { cx:32, cy:34, r:8, fill: color.ball }));
+      svg.appendChild(el('circle', { cx:32, cy:34, r:9, fill:'none', stroke: color.ball, 'stroke-width':1, opacity:0.3 }));
     } else {
-      // Dark / unconquered
-      const board = document.createElementNS(svgNS, 'rect');
-      board.setAttribute('x', '18'); board.setAttribute('y', '2');
-      board.setAttribute('width', '28'); board.setAttribute('height', '20');
-      board.setAttribute('rx', '1');
-      board.setAttribute('fill', '#111');
-      board.setAttribute('stroke', '#2a2a2a');
-      board.setAttribute('stroke-width', '1.5');
-      svg.appendChild(board);
-
-      const pole = document.createElementNS(svgNS, 'rect');
-      pole.setAttribute('x', '30'); pole.setAttribute('y', '22');
-      pole.setAttribute('width', '4'); pole.setAttribute('height', '14');
-      pole.setAttribute('fill', '#222');
-      svg.appendChild(pole);
-
-      const rim = document.createElementNS(svgNS, 'ellipse');
-      rim.setAttribute('cx', '32'); rim.setAttribute('cy', '36');
-      rim.setAttribute('rx', '14'); rim.setAttribute('ry', '4');
-      rim.setAttribute('fill', 'none');
-      rim.setAttribute('stroke', '#2a2a2a');
-      rim.setAttribute('stroke-width', '2');
-      svg.appendChild(rim);
-
-      // Question mark
-      const q = document.createElementNS(svgNS, 'text');
-      q.setAttribute('x', '32'); q.setAttribute('y', '66');
-      q.setAttribute('text-anchor', 'middle');
-      q.setAttribute('font-family', 'Share Tech Mono, monospace');
-      q.setAttribute('font-size', '10');
-      q.setAttribute('fill', '#2a2a2a');
-      q.textContent = '?';
-      svg.appendChild(q);
+      svg.appendChild(el('rect',    { x:18, y:2, width:28, height:20, rx:1, fill:'#111', stroke:'#2a2a2a', 'stroke-width':1.5 }));
+      svg.appendChild(el('rect',    { x:30, y:22, width:4, height:14, fill:'#222' }));
+      svg.appendChild(el('ellipse', { cx:32, cy:36, rx:14, ry:4, fill:'none', stroke:'#2a2a2a', 'stroke-width':2 }));
+      svg.appendChild(el('text',    { x:32, y:66, 'text-anchor':'middle', 'font-family':'Share Tech Mono, monospace', 'font-size':10, fill:'#2a2a2a' }, '?'));
     }
+    return svg;
+  }
 
-    const dot = document.createElement('span');
-    dot.className = 'current-dot' + (i <= stats.currentStreak ? ' active' : '');
-    dot.setAttribute('aria-hidden', 'true');
+  function makeSeg(svgEl, labelText, labelClass) {
+    const seg = document.createElement('div');
+    seg.className = 'hoop-segment';
+    const lbl = document.createElement('span');
+    lbl.className = 'hoop-num ' + labelClass;
+    lbl.textContent = labelText;
+    seg.appendChild(svgEl);
+    seg.appendChild(lbl);
+    return seg;
+  }
 
-    const label = document.createElement('span');
-    label.className = 'hoop-num ' + (lit ? 'lit' : 'dark-label');
-    label.textContent = i;
+  // Current-run icon (cyan) — sits left of the divider
+  const currentLit = stats.currentStreak > 0;
+  const cyanColor = { boardFill:'#002a33', board:'#00d4ff', pole:'#00d4ff', rim:'#00d4ff', ball:'#00d4ff' };
+  const curSVG = makeHoopSVG(currentLit, cyanColor);
+  questEl.appendChild(makeSeg(curSVG, stats.currentStreak, 'current-label'));
 
-    seg.appendChild(svg);
-    seg.appendChild(dot);
-    seg.appendChild(label);
-    questEl.appendChild(seg);
+  // Divider
+  const div = document.createElement('div');
+  div.className = 'quest-divider';
+  div.setAttribute('aria-hidden', 'true');
+  questEl.appendChild(div);
+
+  // 10 best-run hoops
+  const bestColor = { boardFill:'#0a2a0d', board:'#39ff47', pole:'#39ff47', rim:'#ff6a00', ball:'#ff6a00' };
+  for (let i = 1; i <= GOAL; i++) {
+    const lit = i <= stats.longestStreak;
+    questEl.appendChild(makeSeg(makeHoopSVG(lit, bestColor), i, lit ? 'lit' : 'dark-label'));
+  }
   }
 
   // Callout — find how many times best streak was hit and at which days
