@@ -1,0 +1,19 @@
+name: Validate shot log
+
+# Runs on every push and PR. If shots.js is malformed, the run fails with
+# a red ✗ on the commit (visible in the GitHub mobile app) and GitHub emails
+# you — so a typo gets caught instead of silently shipping wrong stats.
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate shots.js
+        run: node scripts/validate-shots.js

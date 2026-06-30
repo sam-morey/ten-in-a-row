@@ -826,55 +826,12 @@
   <div class="floor-stripe-bottom" aria-hidden="true"></div>
 
   <!-- ════════════════════════════════════════════════════════════════
-       SHOT LOG — add one line per new day to update every stat
-       Format: { day, date, result: "make"|"miss", note: "" }
-       Bonus flag means an extra practice vid — doesn't affect stats
+       SHOT LOG lives in shots.js — that's the only file you edit to
+       add a new day. It defines a global `SHOTS` array used below.
        ════════════════════════════════════════════════════════════════ -->
-  <script>
-  const SHOTS = [
-    { day:  1, date: "5/20/2026", result: "make", note: "" },
-    { day:  2, date: "5/21/2026", result: "miss", note: "" },
-    { day:  3, date: "5/22/2026", result: "miss", note: "" },
-    { day:  4, date: "5/23/2026", result: "miss", note: "" },
-    { day:  5, date: "5/24/2026", result: "miss", note: "" },
-    { day:  6, date: "5/25/2026", result: "make", note: "" },
-    { day:  7, date: "5/26/2026", result: "make", note: "" },
-    { day:  8, date: "5/27/2026", result: "make", note: "bonus vid - make" },
-    { day:  9, date: "5/28/2026", result: "miss", note: "bonus vid - make" },
-    { day: 10, date: "5/29/2026", result: "make", note: "" },
-    { day: 11, date: "5/30/2026", result: "make", note: "" },
-    { day: 12, date: "5/31/2026", result: "make", note: "" },
-    { day: 13, date: "6/1/2026",  result: "miss", note: "" },
-    { day: 14, date: "6/2/2026",  result: "make", note: "" },
-    { day: 15, date: "6/3/2026",  result: "make", note: "" },
-    { day: 16, date: "6/4/2026",  result: "make", note: "" },
-    { day: 17, date: "6/5/2026",  result: "miss", note: "" },
-    { day: 18, date: "6/6/2026",  result: "miss", note: "" },
-    { day: 19, date: "6/7/2026",  result: "make", note: "" },
-    { day: 20, date: "6/8/2026",  result: "make", note: "" },
-    { day: 21, date: "6/9/2026",  result: "miss", note: "" },
-    { day: 22, date: "6/10/2026", result: "make", note: "" },
-    { day: 23, date: "6/11/2026", result: "make", note: "" },
-    { day: 24, date: "6/12/2026", result: "make", note: "bonus vid - make" },
-    { day: 25, date: "6/13/2026", result: "make", note: "" },
-    { day: 26, date: "6/14/2026", result: "make", note: "" },
-    { day: 27, date: "6/15/2026", result: "make", note: "" },
-    { day: 28, date: "6/16/2026", result: "miss", note: "" },
-    { day: 29, date: "6/17/2026", result: "make", note: "" },
-    { day: 30, date: "6/18/2026", result: "make", note: "" },
-    { day: 31, date: "6/19/2026", result: "make", note: "" },
-    { day: 32, date: "6/20/2026", result: "make", note: "" },
-    { day: 33, date: "6/21/2026", result: "make", note: "" },
-    { day: 34, date: "6/22/2026", result: "miss", note: "" },
-    { day: 35, date: "6/23/2026", result: "make", note: "" },
-    { day: 36, date: "6/24/2026", result: "make", note: "" },
-    { day: 37, date: "6/25/2026", result: "make", note: "" },
-    { day: 38, date: "6/26/2026", result: "make", note: "" },
-    { day: 39, date: "6/27/2026", result: "make", note: "" },
-    { day: 40, date: "6/28/2026", result: "make", note: "" },
-    { day: 41, date: "6/29/2026", result: "miss", note: "" },
-  ];
+  <script src="shots.js"></script>
 
+  <script>
   // ── Derived stats (all computed from SHOTS, never hardcoded) ──────
 
   function computeStats(shots) {
@@ -926,6 +883,49 @@
       streakRuns,
       cumulative,
     };
+  }
+
+  // ── Safety net: validate the shot log before deriving anything ────
+  // Mirrors scripts/validate-shots.js. If the data is malformed we show
+  // a banner and stop, rather than rendering wrong numbers.
+
+  function validateShots(shots) {
+    if (!Array.isArray(shots) || shots.length === 0) {
+      return 'shots.js did not load or SHOTS is empty.';
+    }
+    let prevDate = null;
+    for (let i = 0; i < shots.length; i++) {
+      const s = shots[i];
+      const where = `day ${s && s.day !== undefined ? s.day : '(index ' + i + ')'}`;
+      if (s.result !== 'make' && s.result !== 'miss') {
+        return `${where}: result must be "make" or "miss" (got "${s.result}").`;
+      }
+      if (s.day !== i + 1) {
+        return `${where}: days must run 1,2,3… with no gaps or duplicates (expected ${i + 1}).`;
+      }
+      const d = new Date(s.date);
+      if (isNaN(d.getTime())) {
+        return `${where}: date "${s.date}" is not a valid date.`;
+      }
+      if (prevDate && d < prevDate) {
+        return `${where}: date "${s.date}" is earlier than the previous day.`;
+      }
+      prevDate = d;
+    }
+    return null;
+  }
+
+  const shotError = validateShots(typeof SHOTS !== 'undefined' ? SHOTS : undefined);
+  if (shotError) {
+    const banner = document.createElement('div');
+    banner.setAttribute('role', 'alert');
+    banner.style.cssText =
+      'position:fixed;top:0;left:0;right:0;z-index:9999;background:#ff2828;' +
+      "color:#fff;font-family:'Share Tech Mono',monospace;font-size:13px;" +
+      'padding:12px 16px;text-align:center;letter-spacing:0.04em;';
+    banner.textContent = '⚠ Shot log error — check shots.js: ' + shotError;
+    document.body.prepend(banner);
+    throw new Error('Invalid shot log: ' + shotError);
   }
 
   const stats = computeStats(SHOTS);
