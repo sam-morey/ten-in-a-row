@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>One Shot One Take — The Official Record</title>
+  <meta name="description" content="The definitive statistical account of one man's quest to make 10 consecutive shots on a kid-sized toy basketball hoop." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Share+Tech+Mono&family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Reset & tokens ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #080808;
+      --surface:    #111111;
+      --surface2:   #1a1a1a;
+      --border:     #2a2a2a;
+      --wood-dark:  #3d1f08;
+      --wood-mid:   #6b3a1f;
+      --wood-light: #c8854a;
+      --wood-grain: #a06030;
+      --led-green:  #39ff47;
+      --led-dim:    #0a2a0d;
+      --led-red:    #ff2828;
+      --led-red-dim:#2d0606;
+      --orange:     #ff6a00;
+      --orange-dim: #2a1200;
+      --bone:       #f0ead8;
+      --bone-dim:   #8a8070;
+      --text:       #d8d0c0;
+      --text-dim:   #5a5245;
+
+      --font-display: 'Anton', 'Arial Black', sans-serif;
+      --font-mono:    'Share Tech Mono', 'Courier New', monospace;
+      --font-body:    'Archivo', 'Helvetica Neue', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Accessibility ───────────────────────────────────────────── */
+    :focus-visible {
+      outline: 2px solid var(--orange);
+      outline-offset: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ─── Utility ─────────────────────────────────────────────────── */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+
+    .section {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ─── Hardwood floor stripe at top ───────────────────────────── */
+    .floor-stripe {
+      height: 6px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--wood-dark) 0px,
+        var(--wood-dark) 80px,
+        var(--wood-mid) 80px,
+        var(--wood-mid) 160px,
+        var(--wood-light) 160px,
+        var(--wood-light) 200px,
+        var(--wood-grain) 200px,
+        var(--wood-grain) 240px
+      );
+      opacity: 0.9;
+    }
+
+    /* ─── Broadcast banner ────────────────────────────────────────── */
+    .broadcast-banner {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .broadcast-logo {
+      font-family: var(--font-display);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--orange);
+      text-transform: uppercase;
+    }
+
+    .broadcast-sep { color: var(--border); }
+
+    .broadcast-tagline {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── Hero ────────────────────────────────────────────────────── */
+    .hero {
+      padding: 80px 24px 60px;
+      text-align: center;
+      background:
+        radial-gradient(ellipse 120% 60% at 50% 0%, #1a0900 0%, transparent 70%),
+        var(--black);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Court lines */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        /* arc */
+        radial-gradient(ellipse 80% 50% at 50% 110%, transparent 48%, rgba(240,234,216,0.035) 49%, transparent 51%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      color: var(--orange);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 8vw, 6.5rem);
+      line-height: 0.92;
+      letter-spacing: 0.01em;
+      color: var(--bone);
+      text-transform: uppercase;
+      text-wrap: balance;
+      max-width: 900px;
+      margin: 0 auto 12px;
+    }
+
+    .hero-title em {
+      font-style: normal;
+      color: var(--orange);
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-display);
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      letter-spacing: 0.18em;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+      margin-bottom: 56px;
+    }
+
+    /* ─── Scoreboard strip ────────────────────────────────────────── */
+    .scoreboard {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 2px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .sb-cell {
+      background: #0d0d0d;
+      border: 1px solid #1e1e1e;
+      padding: 16px 28px;
+      flex: 1;
+      min-width: 140px;
+      text-align: center;
+      position: relative;
+    }
+
+    .sb-cell::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--orange);
+      opacity: 0.5;
+    }
+
+    .sb-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .sb-value {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      color: var(--led-green);
+      text-shadow: 0 0 12px rgba(57,255,71,0.5);
+      line-height: 1;
+    }
+
+    .sb-value.pct::after {
+      content: '%';
+      font-size: 0.55em;
+      opacity: 0.7;
+      margin-left: 2px;
+    }
+
+    .sb-value.danger {
+      color: var(--led-red);
+      text-shadow: 0 0 12px rgba(255,40,40,0.5);
+    }
+
+    /* ─── Section structure ───────────────────────────────────────── */
+    .content-section {
+      padding: 72px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .content-section:last-of-type { border-bottom: none; }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--orange);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      color: var(--bone);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .section-prose {
+      color: var(--bone-dim);
+      font-size: 0.9rem;
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    /* ─── Quest tracker ───────────────────────────────────────────── */
+    .quest-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .quest-tracker {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding: 24px 0;
+    }
+
+    .hoop-segment {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .hoop-icon {
+      width: 64px;
+      height: 72px;
+      position: relative;
+    }
+
+    @media (max-width: 600px) {
+      .hoop-icon { width: 44px; height: 50px; }
+      .quest-tracker { gap: 4px; }
+    }
+
+    .hoop-num {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+
+    .hoop-num.lit { color: var(--led-green); }
+    .hoop-num.dark-label { color: var(--text-dim); }
+
+    .quest-divider {
+      width: 2px;
+      height: 40px;
+      background: var(--border);
+      flex-shrink: 0;
+      margin: 0 4px;
+      align-self: flex-start;
+      margin-top: 15px;
+    }
+
+    .quest-legend {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.made { background: var(--led-green); box-shadow: 0 0 6px var(--led-green); }
+    .legend-dot.pending { background: var(--surface2); border: 1px solid var(--border); }
+
+    .quest-callout {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .callout-stat {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      color: var(--led-red);
+      text-shadow: 0 0 10px rgba(255,40,40,0.3);
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .callout-note {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── Season grid ─────────────────────────────────────────────── */
+    .grid-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .day-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+      gap: 4px;
+    }
+
+    @media (max-width: 480px) {
+      .day-grid {
+        grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+      }
+    }
+
+    .day-cell {
+      aspect-ratio: 1;
+      border: 1px solid transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: default;
+      position: relative;
+      transition: transform 0.1s ease, border-color 0.1s ease;
+    }
+
+    .day-cell:hover,
+    .day-cell:focus-visible {
+      transform: scale(1.12);
+      z-index: 2;
+      border-color: var(--bone);
+    }
+
+    .day-cell.make {
+      background: var(--led-dim);
+      border-color: rgba(57,255,71,0.2);
+    }
+    .day-cell.make:hover { border-color: var(--led-green); }
+
+    .day-cell.miss {
+      background: var(--led-red-dim);
+      border-color: rgba(255,40,40,0.2);
+    }
+    .day-cell.miss:hover { border-color: var(--led-red); }
+
+    .day-cell .cell-day {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      line-height: 1;
+    }
+
+    .day-cell .cell-icon {
+      font-size: 14px;
+      line-height: 1;
+      margin-top: 1px;
+    }
+
+    .day-cell.make .cell-icon { color: var(--led-green); }
+    .day-cell.miss .cell-icon { color: var(--led-red); }
+
+    .day-cell .bonus-dot {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--orange);
+      opacity: 0.7;
+    }
+
+    /* Tooltip */
+    .day-cell[data-tooltip] {
+      position: relative;
+    }
+    .day-cell[data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e1e1e;
+      border: 1px solid var(--border);
+      color: var(--bone);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      white-space: nowrap;
+      padding: 4px 8px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      z-index: 10;
+    }
+    .day-cell[data-tooltip]:hover::after,
+    .day-cell[data-tooltip]:focus-visible::after {
+      opacity: 1;
+    }
+
+    .grid-footer {
+      display: flex;
+      gap: 20px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .grid-legend {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .gl-swatch {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ─── Sparkline ───────────────────────────────────────────────── */
+    .sparkline-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .sparkline-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 24px;
+      position: relative;
+    }
+
+    .sparkline-container svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      overflow: visible;
+    }
+
+    .sparkline-axis-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+    }
+
+    .sparkline-axis-labels span {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+
+    /* ─── Deadpan copy sections ───────────────────────────────────── */
+    .lore-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .lore-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--orange);
+      padding: 28px 24px;
+    }
+
+    .lore-card-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      color: var(--orange);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .lore-card p {
+      font-size: 0.875rem;
+      color: var(--text-dim);
+      line-height: 1.75;
+    }
+
+    .lore-card p strong {
+      color: var(--bone);
+      font-weight: 600;
+    }
+
+    /* ─── Pull quote ──────────────────────────────────────────────── */
+    .pull-quote {
+      max-width: 960px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 56px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pull-quote blockquote {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      color: var(--bone);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    .pull-quote cite {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      font-style: normal;
+    }
+
+    /* ─── Footer ──────────────────────────────────────────────────── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .footer-name {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .footer-sub {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    .floor-stripe-bottom {
+      height: 4px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--wood-dark) 0px,
+        var(--wood-dark) 60px,
+        var(--wood-mid) 60px,
+        var(--wood-mid) 120px,
+        var(--wood-grain) 120px,
+        var(--wood-grain) 180px
+      );
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="floor-stripe" aria-hidden="true"></div>
+
+  <header class="broadcast-banner">
+    <span class="broadcast-logo">One Shot One Take</span>
+    <span class="broadcast-sep" aria-hidden="true">|</span>
+    <span class="broadcast-tagline">Live Coverage · Season One</span>
+  </header>
+
+  <!-- ── HERO ──────────────────────────────────────────────────────── -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <p class="hero-eyebrow">The Official Statistical Record</p>
+    <h1 class="hero-title" id="hero-heading">
+      They Say You Can't Make <em>10</em> in a Row
+    </h1>
+    <p class="hero-subtitle">One Shot &nbsp;·&nbsp; One Take &nbsp;·&nbsp; One Hoop</p>
+
+    <div class="scoreboard" role="region" aria-label="Live scoreboard">
+      <div class="sb-cell">
+        <span class="sb-label">Day</span>
+        <span class="sb-value" id="sb-day">—</span>
+      </div>
+      <div class="sb-cell">
+        <span class="sb-label">Make %</span>
+        <span class="sb-value pct" id="sb-pct">—</span>
+      </div>
+      <div class="sb-cell">
+        <span class="sb-label">Best Streak</span>
+        <span class="sb-value" id="sb-best">—</span>
+      </div>
+      <div class="sb-cell">
+        <span class="sb-label">Current Streak</span>
+        <span class="sb-value" id="sb-current">—</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── QUEST TRACKER ─────────────────────────────────────────────── -->
+  <section class="content-section" aria-labelledby="quest-heading">
+    <div class="quest-wrap section">
+      <p class="section-label">The Quest</p>
+      <h2 class="section-title" id="quest-heading">10 in a Row</h2>
+      <p class="section-prose">
+        The mission is unchanged. Ten consecutive makes on a regulation toy hoop.
+        Every session is documented. The margin for error is zero.
+      </p>
+
+      <div class="quest-tracker" id="quest-tracker" role="img" aria-label="Quest progress tracker showing best streak"></div>
+
+      <div class="quest-legend">
+        <span class="legend-item">
+          <span class="legend-dot made"></span>
+          Best run confirmed
+        </span>
+        <span class="legend-item">
+          <span class="legend-dot pending"></span>
+          Unconquered
+        </span>
+      </div>
+
+      <div class="quest-callout" id="quest-callout">
+        <span class="callout-stat" id="callout-stat">—</span>
+        <span class="callout-note" id="callout-note">—</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SEASON GRID ────────────────────────────────────────────────── -->
+  <section class="content-section" aria-labelledby="grid-heading">
+    <div class="grid-wrap section">
+      <p class="section-label">The Record</p>
+      <h2 class="section-title" id="grid-heading">Full Season Log</h2>
+      <p class="section-prose">
+        Every official attempt, every result. Hover any day to confirm.
+        The orange dot marks sessions with bonus practice footage — not counted in the official record.
+      </p>
+
+      <div class="day-grid" id="day-grid" role="list" aria-label="Season shot log"></div>
+
+      <div class="grid-footer">
+        <span class="grid-legend">
+          <svg class="gl-swatch" viewBox="0 0 14 14" aria-hidden="true"><rect width="14" height="14" fill="#0a2a0d" stroke="rgba(57,255,71,0.3)" stroke-width="1"/></svg>
+          Make
+        </span>
+        <span class="grid-legend">
+          <svg class="gl-swatch" viewBox="0 0 14 14" aria-hidden="true"><rect width="14" height="14" fill="#2d0606" stroke="rgba(255,40,40,0.3)" stroke-width="1"/></svg>
+          Miss
+        </span>
+        <span class="grid-legend">
+          <svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><circle cx="11" cy="3" r="3" fill="#ff6a00" opacity="0.7"/></svg>
+          Bonus footage day
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SPARKLINE ──────────────────────────────────────────────────── -->
+  <section class="content-section" aria-labelledby="arc-heading">
+    <div class="sparkline-wrap section">
+      <p class="section-label">The Arc</p>
+      <h2 class="section-title" id="arc-heading">Cumulative Make %</h2>
+      <p class="section-prose">
+        The rolling make percentage across every official attempt, charted from day one.
+        Volatility compressed. Character revealed.
+      </p>
+
+      <div class="sparkline-container">
+        <svg id="sparkline-svg" viewBox="0 0 900 180" xmlns="http://www.w3.org/2000/svg"
+             aria-label="Cumulative make percentage sparkline" role="img">
+        </svg>
+        <div class="sparkline-axis-labels">
+          <span>Day 1</span>
+          <span id="spark-last-label">Day —</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PULL QUOTE ─────────────────────────────────────────────────── -->
+  <div class="pull-quote">
+    <blockquote>"They say you can't make 10 in a row."</blockquote>
+    <cite>— Said before every single attempt, without exception</cite>
+  </div>
+
+  <!-- ── LORE CARDS ─────────────────────────────────────────────────── -->
+  <section class="content-section" aria-labelledby="lore-heading">
+    <div class="section lore-grid">
+
+      <div class="lore-card">
+        <p class="lore-card-label">The Venue</p>
+        <p>
+          A residential backyard. The hoop is <strong>toy-sized</strong> — the kind
+          typically marketed to children between the ages of three and six. It is
+          installed at a fixed height. No adjustments have been made.
+          The surface is irregular. Conditions vary.
+        </p>
+      </div>
+
+      <div class="lore-card">
+        <p class="lore-card-label">The Format</p>
+        <p>
+          One official attempt per day. The attempt is filmed. The film is shared.
+          The catchphrase is delivered deadpan, every time, without deviation.
+          <strong>There are no re-takes</strong> — except for the bonus sessions,
+          which are unofficial and not counted.
+        </p>
+      </div>
+
+      <div class="lore-card">
+        <p class="lore-card-label">The Heartbreak</p>
+        <p>
+          On two separate occasions, the athlete reached a streak of six consecutive
+          makes — the longest run in the official record. On both occasions,
+          <strong>the very next shot was a miss</strong>. The sequence
+          has repeated exactly. The record stands at six.
+        </p>
+      </div>
+
+      <div class="lore-card">
+        <p class="lore-card-label">The Mathematics</p>
+        <p>
+          At the current make rate, the probability of converting ten consecutive
+          shots is approximately <strong>3%</strong>. This number is not
+          discouraging. It is simply the number. The campaign continues.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <p class="floor-stripe" style="margin-bottom:32px; opacity:0.4;" aria-hidden="true"></p>
+    <p class="footer-name">One Shot One Take</p>
+    <p class="footer-sub" id="footer-sub">Season One · Official Record</p>
+  </footer>
+
+  <div class="floor-stripe-bottom" aria-hidden="true"></div>
+
+  <!-- ════════════════════════════════════════════════════════════════
+       SHOT LOG — add one line per new day to update every stat
+       Format: { day, date, result: "make"|"miss", note: "" }
+       Bonus flag means an extra practice vid — doesn't affect stats
+       ════════════════════════════════════════════════════════════════ -->
+  <script>
+  const SHOTS = [
+    { day:  1, date: "5/20/2026", result: "make", note: "" },
+    { day:  2, date: "5/21/2026", result: "miss", note: "" },
+    { day:  3, date: "5/22/2026", result: "miss", note: "" },
+    { day:  4, date: "5/23/2026", result: "miss", note: "" },
+    { day:  5, date: "5/24/2026", result: "miss", note: "" },
+    { day:  6, date: "5/25/2026", result: "make", note: "" },
+    { day:  7, date: "5/26/2026", result: "make", note: "" },
+    { day:  8, date: "5/27/2026", result: "make", note: "bonus vid - make" },
+    { day:  9, date: "5/28/2026", result: "miss", note: "bonus vid - make" },
+    { day: 10, date: "5/29/2026", result: "make", note: "" },
+    { day: 11, date: "5/30/2026", result: "make", note: "" },
+    { day: 12, date: "5/31/2026", result: "make", note: "" },
+    { day: 13, date: "6/1/2026",  result: "miss", note: "" },
+    { day: 14, date: "6/2/2026",  result: "make", note: "" },
+    { day: 15, date: "6/3/2026",  result: "make", note: "" },
+    { day: 16, date: "6/4/2026",  result: "make", note: "" },
+    { day: 17, date: "6/5/2026",  result: "miss", note: "" },
+    { day: 18, date: "6/6/2026",  result: "miss", note: "" },
+    { day: 19, date: "6/7/2026",  result: "make", note: "" },
+    { day: 20, date: "6/8/2026",  result: "make", note: "" },
+    { day: 21, date: "6/9/2026",  result: "miss", note: "" },
+    { day: 22, date: "6/10/2026", result: "make", note: "" },
+    { day: 23, date: "6/11/2026", result: "make", note: "" },
+    { day: 24, date: "6/12/2026", result: "make", note: "bonus vid - make" },
+    { day: 25, date: "6/13/2026", result: "make", note: "" },
+    { day: 26, date: "6/14/2026", result: "make", note: "" },
+    { day: 27, date: "6/15/2026", result: "make", note: "" },
+    { day: 28, date: "6/16/2026", result: "miss", note: "" },
+    { day: 29, date: "6/17/2026", result: "make", note: "" },
+    { day: 30, date: "6/18/2026", result: "make", note: "" },
+    { day: 31, date: "6/19/2026", result: "make", note: "" },
+    { day: 32, date: "6/20/2026", result: "make", note: "" },
+    { day: 33, date: "6/21/2026", result: "make", note: "" },
+    { day: 34, date: "6/22/2026", result: "miss", note: "" },
+    { day: 35, date: "6/23/2026", result: "make", note: "" },
+    { day: 36, date: "6/24/2026", result: "make", note: "" },
+    { day: 37, date: "6/25/2026", result: "make", note: "" },
+    { day: 38, date: "6/26/2026", result: "make", note: "" },
+    { day: 39, date: "6/27/2026", result: "make", note: "" },
+    { day: 40, date: "6/28/2026", result: "make", note: "" },
+    { day: 41, date: "6/29/2026", result: "miss", note: "" },
+  ];
+
+  // ── Derived stats (all computed from SHOTS, never hardcoded) ──────
+
+  function computeStats(shots) {
+    let makes = 0;
+    let longestStreak = 0;
+    let currentStreak = 0;
+    let runningStreak = 0;
+    // Track where each streak happened
+    const streakRuns = []; // { start, length }
+    let runStart = -1;
+
+    shots.forEach((s, i) => {
+      if (s.result === 'make') {
+        makes++;
+        runningStreak++;
+        if (runStart === -1) runStart = s.day;
+        if (runningStreak > longestStreak) longestStreak = runningStreak;
+      } else {
+        if (runningStreak > 0) {
+          streakRuns.push({ start: runStart, length: runningStreak });
+        }
+        runningStreak = 0;
+        runStart = -1;
+      }
+    });
+    // Flush last run
+    if (runningStreak > 0) {
+      streakRuns.push({ start: runStart, length: runningStreak });
+    }
+
+    // Current streak = running streak at end of log
+    currentStreak = shots[shots.length - 1].result === 'make' ? runningStreak : 0;
+
+    // Cumulative % per day (for sparkline)
+    const cumulative = [];
+    let m = 0;
+    shots.forEach((s, i) => {
+      if (s.result === 'make') m++;
+      cumulative.push({ day: s.day, date: s.date, pct: m / (i + 1) });
+    });
+
+    return {
+      total: shots.length,
+      makes,
+      misses: shots.length - makes,
+      makePct: makes / shots.length,
+      longestStreak,
+      currentStreak,
+      streakRuns,
+      cumulative,
+    };
+  }
+
+  const stats = computeStats(SHOTS);
+
+  // ── Populate scoreboard ───────────────────────────────────────────
+
+  document.getElementById('sb-day').textContent      = stats.total;
+  document.getElementById('sb-best').textContent     = stats.longestStreak;
+
+  const pctEl = document.getElementById('sb-pct');
+  pctEl.textContent = Math.round(stats.makePct * 100);
+
+  const curEl = document.getElementById('sb-current');
+  curEl.textContent = stats.currentStreak;
+  if (stats.currentStreak === 0) curEl.classList.add('danger');
+
+  document.getElementById('footer-sub').textContent =
+    `Season One · ${stats.total} days · ${stats.makes} makes`;
+
+  // ── Quest tracker (10 segments) ───────────────────────────────────
+
+  const questEl = document.getElementById('quest-tracker');
+  const GOAL = 10;
+
+  for (let i = 1; i <= GOAL; i++) {
+    const lit = i <= stats.longestStreak;
+    const seg = document.createElement('div');
+    seg.className = 'hoop-segment';
+
+    // SVG hoop icon
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 64 72');
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    svg.setAttribute('class', 'hoop-icon');
+    svg.setAttribute('aria-hidden', 'true');
+
+    if (lit) {
+      // Backboard
+      const board = document.createElementNS(svgNS, 'rect');
+      board.setAttribute('x', '18'); board.setAttribute('y', '2');
+      board.setAttribute('width', '28'); board.setAttribute('height', '20');
+      board.setAttribute('rx', '1');
+      board.setAttribute('fill', '#0a2a0d');
+      board.setAttribute('stroke', '#39ff47');
+      board.setAttribute('stroke-width', '1.5');
+      svg.appendChild(board);
+
+      // Inner box
+      const inner = document.createElementNS(svgNS, 'rect');
+      inner.setAttribute('x', '22'); inner.setAttribute('y', '5');
+      inner.setAttribute('width', '20'); inner.setAttribute('height', '13');
+      inner.setAttribute('rx', '0.5');
+      inner.setAttribute('fill', 'none');
+      inner.setAttribute('stroke', '#39ff47');
+      inner.setAttribute('stroke-width', '0.8');
+      svg.appendChild(inner);
+
+      // Pole
+      const pole = document.createElementNS(svgNS, 'rect');
+      pole.setAttribute('x', '30'); pole.setAttribute('y', '22');
+      pole.setAttribute('width', '4'); pole.setAttribute('height', '14');
+      pole.setAttribute('fill', '#39ff47');
+      svg.appendChild(pole);
+
+      // Rim
+      const rim = document.createElementNS(svgNS, 'ellipse');
+      rim.setAttribute('cx', '32'); rim.setAttribute('cy', '36');
+      rim.setAttribute('rx', '14'); rim.setAttribute('ry', '4');
+      rim.setAttribute('fill', 'none');
+      rim.setAttribute('stroke', '#ff6a00');
+      rim.setAttribute('stroke-width', '2.5');
+      svg.appendChild(rim);
+
+      // Net lines
+      for (let n = 0; n < 5; n++) {
+        const nx = 20 + n * 6;
+        const line = document.createElementNS(svgNS, 'line');
+        line.setAttribute('x1', String(nx)); line.setAttribute('y1', '36');
+        line.setAttribute('x2', String(nx + (n - 2) * 1.5)); line.setAttribute('y2', '54');
+        line.setAttribute('stroke', '#39ff47');
+        line.setAttribute('stroke-width', '0.8');
+        line.setAttribute('opacity', '0.6');
+        svg.appendChild(line);
+      }
+      // Net bottom
+      const nb = document.createElementNS(svgNS, 'line');
+      nb.setAttribute('x1', '22'); nb.setAttribute('y1', '54');
+      nb.setAttribute('x2', '42'); nb.setAttribute('y2', '54');
+      nb.setAttribute('stroke', '#39ff47');
+      nb.setAttribute('stroke-width', '0.8');
+      nb.setAttribute('opacity', '0.6');
+      svg.appendChild(nb);
+
+      // Ball
+      const ball = document.createElementNS(svgNS, 'circle');
+      ball.setAttribute('cx', '32'); ball.setAttribute('cy', '34');
+      ball.setAttribute('r', '8');
+      ball.setAttribute('fill', '#ff6a00');
+      svg.appendChild(ball);
+
+      // Ball glow
+      const glow = document.createElementNS(svgNS, 'circle');
+      glow.setAttribute('cx', '32'); glow.setAttribute('cy', '34');
+      glow.setAttribute('r', '9');
+      glow.setAttribute('fill', 'none');
+      glow.setAttribute('stroke', '#ff6a00');
+      glow.setAttribute('stroke-width', '1');
+      glow.setAttribute('opacity', '0.3');
+      svg.appendChild(glow);
+
+    } else {
+      // Dark / unconquered
+      const board = document.createElementNS(svgNS, 'rect');
+      board.setAttribute('x', '18'); board.setAttribute('y', '2');
+      board.setAttribute('width', '28'); board.setAttribute('height', '20');
+      board.setAttribute('rx', '1');
+      board.setAttribute('fill', '#111');
+      board.setAttribute('stroke', '#2a2a2a');
+      board.setAttribute('stroke-width', '1.5');
+      svg.appendChild(board);
+
+      const pole = document.createElementNS(svgNS, 'rect');
+      pole.setAttribute('x', '30'); pole.setAttribute('y', '22');
+      pole.setAttribute('width', '4'); pole.setAttribute('height', '14');
+      pole.setAttribute('fill', '#222');
+      svg.appendChild(pole);
+
+      const rim = document.createElementNS(svgNS, 'ellipse');
+      rim.setAttribute('cx', '32'); rim.setAttribute('cy', '36');
+      rim.setAttribute('rx', '14'); rim.setAttribute('ry', '4');
+      rim.setAttribute('fill', 'none');
+      rim.setAttribute('stroke', '#2a2a2a');
+      rim.setAttribute('stroke-width', '2');
+      svg.appendChild(rim);
+
+      // Question mark
+      const q = document.createElementNS(svgNS, 'text');
+      q.setAttribute('x', '32'); q.setAttribute('y', '66');
+      q.setAttribute('text-anchor', 'middle');
+      q.setAttribute('font-family', 'Share Tech Mono, monospace');
+      q.setAttribute('font-size', '10');
+      q.setAttribute('fill', '#2a2a2a');
+      q.textContent = '?';
+      svg.appendChild(q);
+    }
+
+    const label = document.createElement('span');
+    label.className = 'hoop-num ' + (lit ? 'lit' : 'dark-label');
+    label.textContent = i;
+
+    seg.appendChild(svg);
+    seg.appendChild(label);
+    questEl.appendChild(seg);
+  }
+
+  // Callout — find how many times best streak was hit and at which days
+  const bestRuns = stats.streakRuns.filter(r => r.length === stats.longestStreak);
+  const calloutStat = document.getElementById('callout-stat');
+  const calloutNote = document.getElementById('callout-note');
+
+  if (bestRuns.length > 0) {
+    calloutStat.textContent =
+      `${stats.longestStreak} of 10 — reached ${bestRuns.length}× `;
+    const runDesc = bestRuns.map(r =>
+      `days ${r.start}–${r.start + r.length - 1}`
+    ).join(' and ');
+    calloutNote.textContent =
+      `Personal best: ${runDesc}. The next shot, on each occasion, was a miss.`;
+  }
+
+  // ── Season grid ───────────────────────────────────────────────────
+
+  const gridEl = document.getElementById('day-grid');
+  SHOTS.forEach(s => {
+    const cell = document.createElement('div');
+    cell.className = `day-cell ${s.result}`;
+    cell.setAttribute('role', 'listitem');
+    cell.setAttribute('tabindex', '0');
+    const hasBonus = s.note && s.note.includes('bonus');
+    const tooltip = `Day ${s.day} · ${s.date} · ${s.result.toUpperCase()}${hasBonus ? ' · bonus footage' : ''}`;
+    cell.setAttribute('data-tooltip', tooltip);
+    cell.setAttribute('aria-label', tooltip);
+
+    const daySpan = document.createElement('span');
+    daySpan.className = 'cell-day';
+    daySpan.textContent = s.day;
+
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'cell-icon';
+    iconSpan.setAttribute('aria-hidden', 'true');
+    iconSpan.textContent = s.result === 'make' ? '●' : '○';
+
+    cell.appendChild(daySpan);
+    cell.appendChild(iconSpan);
+
+    if (hasBonus) {
+      const dot = document.createElement('span');
+      dot.className = 'bonus-dot';
+      dot.setAttribute('aria-hidden', 'true');
+      cell.appendChild(dot);
+    }
+
+    gridEl.appendChild(cell);
+  });
+
+  // ── Sparkline SVG ─────────────────────────────────────────────────
+
+  (function buildSparkline() {
+    const svg = document.getElementById('sparkline-svg');
+    const W = 900, H = 180, PL = 50, PR = 20, PT = 16, PB = 32;
+    const data = stats.cumulative;
+    const n = data.length;
+
+    function x(i) { return PL + (i / (n - 1)) * (W - PL - PR); }
+    function y(pct) { return PT + (1 - pct) * (H - PT - PB); }
+
+    const ns = 'http://www.w3.org/2000/svg';
+
+    // Grid lines at 25%, 50%, 75%, 100%
+    [0.25, 0.50, 0.75, 1.0].forEach(pct => {
+      const yy = y(pct);
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('x1', PL); line.setAttribute('y1', yy);
+      line.setAttribute('x2', W - PR); line.setAttribute('y2', yy);
+      line.setAttribute('stroke', '#1e1e1e'); line.setAttribute('stroke-width', '1');
+      svg.appendChild(line);
+
+      const label = document.createElementNS(ns, 'text');
+      label.setAttribute('x', PL - 6); label.setAttribute('y', yy + 4);
+      label.setAttribute('text-anchor', 'end');
+      label.setAttribute('font-family', 'Share Tech Mono, monospace');
+      label.setAttribute('font-size', '10');
+      label.setAttribute('fill', '#3a3530');
+      label.textContent = `${Math.round(pct * 100)}%`;
+      svg.appendChild(label);
+    });
+
+    // 71% reference line (current rate)
+    const refY = y(stats.makePct);
+    const refLine = document.createElementNS(ns, 'line');
+    refLine.setAttribute('x1', PL); refLine.setAttribute('y1', refY);
+    refLine.setAttribute('x2', W - PR); refLine.setAttribute('y2', refY);
+    refLine.setAttribute('stroke', '#ff6a00');
+    refLine.setAttribute('stroke-width', '1');
+    refLine.setAttribute('stroke-dasharray', '4 4');
+    refLine.setAttribute('opacity', '0.4');
+    svg.appendChild(refLine);
+
+    const refLabel = document.createElementNS(ns, 'text');
+    refLabel.setAttribute('x', W - PR + 4); refLabel.setAttribute('y', refY + 4);
+    refLabel.setAttribute('font-family', 'Share Tech Mono, monospace');
+    refLabel.setAttribute('font-size', '9');
+    refLabel.setAttribute('fill', '#ff6a00');
+    refLabel.setAttribute('opacity', '0.7');
+    refLabel.textContent = `${Math.round(stats.makePct * 100)}%`;
+    svg.appendChild(refLabel);
+
+    // Area fill path
+    const areaCoords = data.map((d, i) => `${x(i)},${y(d.pct)}`).join(' L ');
+    const areaPath = document.createElementNS(ns, 'path');
+    areaPath.setAttribute('d',
+      `M ${x(0)},${y(data[0].pct)} L ${areaCoords} L ${x(n-1)},${H - PB} L ${x(0)},${H - PB} Z`
+    );
+    areaPath.setAttribute('fill', 'url(#spark-grad)');
+    areaPath.setAttribute('opacity', '0.5');
+    svg.insertBefore(areaPath, svg.firstChild);
+
+    // Gradient def
+    const defs = document.createElementNS(ns, 'defs');
+    const grad = document.createElementNS(ns, 'linearGradient');
+    grad.setAttribute('id', 'spark-grad');
+    grad.setAttribute('x1', '0'); grad.setAttribute('y1', '0');
+    grad.setAttribute('x2', '0'); grad.setAttribute('y2', '1');
+    const stop1 = document.createElementNS(ns, 'stop');
+    stop1.setAttribute('offset', '0%'); stop1.setAttribute('stop-color', '#39ff47'); stop1.setAttribute('stop-opacity', '0.15');
+    const stop2 = document.createElementNS(ns, 'stop');
+    stop2.setAttribute('offset', '100%'); stop2.setAttribute('stop-color', '#39ff47'); stop2.setAttribute('stop-opacity', '0');
+    grad.appendChild(stop1); grad.appendChild(stop2);
+    defs.appendChild(grad);
+    svg.insertBefore(defs, svg.firstChild);
+
+    // Main sparkline
+    const polyline = document.createElementNS(ns, 'polyline');
+    polyline.setAttribute('points', data.map((d, i) => `${x(i)},${y(d.pct)}`).join(' '));
+    polyline.setAttribute('fill', 'none');
+    polyline.setAttribute('stroke', '#39ff47');
+    polyline.setAttribute('stroke-width', '2');
+    polyline.setAttribute('stroke-linejoin', 'round');
+    polyline.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(polyline);
+
+    // Miss dots (red)
+    data.forEach((d, i) => {
+      if (SHOTS[i].result === 'miss') {
+        const dot = document.createElementNS(ns, 'circle');
+        dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(d.pct));
+        dot.setAttribute('r', '3');
+        dot.setAttribute('fill', '#ff2828');
+        svg.appendChild(dot);
+      }
+    });
+
+    // End dot
+    const endDot = document.createElementNS(ns, 'circle');
+    endDot.setAttribute('cx', x(n-1)); endDot.setAttribute('cy', y(data[n-1].pct));
+    endDot.setAttribute('r', '4');
+    endDot.setAttribute('fill', '#ff6a00');
+    endDot.setAttribute('stroke', '#ff6a00');
+    endDot.setAttribute('stroke-width', '2');
+    svg.appendChild(endDot);
+
+    document.getElementById('spark-last-label').textContent = `Day ${stats.total}`;
+  })();
+
+  </script>
+</body>
+</html>
