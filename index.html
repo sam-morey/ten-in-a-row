@@ -317,6 +317,21 @@
     .hoop-num.lit { color: var(--led-green); }
     .hoop-num.dark-label { color: var(--text-dim); }
 
+    .current-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: transparent;
+      border: 1px solid #2a2a2a;
+      flex-shrink: 0;
+    }
+
+    .current-dot.active {
+      background: var(--led-green);
+      border-color: var(--led-green);
+      box-shadow: 0 0 6px var(--led-green), 0 0 12px rgba(57,255,71,0.4);
+    }
+
     .quest-divider {
       width: 2px;
       height: 40px;
@@ -806,6 +821,10 @@
           <span class="legend-dot pending"></span>
           Unconquered
         </span>
+        <span class="legend-item">
+          <span class="current-dot active" style="display:inline-block"></span>
+          Current run
+        </span>
       </div>
 
       <div class="run-tracker-block" id="run-tracker-block" role="region" aria-label="Streak progress tracker"></div>
@@ -1176,11 +1195,16 @@
       svg.appendChild(q);
     }
 
+    const dot = document.createElement('span');
+    dot.className = 'current-dot' + (i <= stats.currentStreak ? ' active' : '');
+    dot.setAttribute('aria-hidden', 'true');
+
     const label = document.createElement('span');
     label.className = 'hoop-num ' + (lit ? 'lit' : 'dark-label');
     label.textContent = i;
 
     seg.appendChild(svg);
+    seg.appendChild(dot);
     seg.appendChild(label);
     questEl.appendChild(seg);
   }
