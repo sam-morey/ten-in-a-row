@@ -354,71 +354,111 @@
     .legend-dot.made { background: var(--led-green); box-shadow: 0 0 6px var(--led-green); }
     .legend-dot.pending { background: var(--surface2); border: 1px solid var(--border); }
 
-    /* ─── Dual-row hoop tracker ──────────────────────────────────── */
-    .quest-rows {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
+    /* ─── Current-run tracker ────────────────────────────────────── */
+    .run-tracker-block {
+      margin-top: 40px;
       border: 1px solid var(--border);
       background: var(--surface);
     }
 
-    .quest-row {
+    .run-tracker-row {
       display: flex;
       align-items: center;
-      gap: 0;
+      padding: 20px 24px;
+      gap: 20px;
       border-bottom: 1px solid var(--border);
     }
 
-    .quest-row:last-child { border-bottom: none; }
+    .run-tracker-row:last-child { border-bottom: none; }
 
-    .quest-row-label {
+    .run-tracker-meta {
       flex-shrink: 0;
-      width: 110px;
-      padding: 16px 16px 16px 20px;
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 6px;
+      width: 96px;
+      text-align: right;
     }
 
-    @media (max-width: 600px) {
-      .quest-row-label { width: 76px; padding: 12px; }
-    }
-
-    .quest-row-name {
+    .run-tracker-meta-label {
+      display: block;
       font-family: var(--font-mono);
       font-size: 9px;
       letter-spacing: 0.2em;
       color: var(--text-dim);
       text-transform: uppercase;
-      line-height: 1;
+      margin-bottom: 4px;
     }
 
-    .quest-row-count {
+    .run-tracker-meta-count {
+      display: block;
       font-family: var(--font-mono);
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       line-height: 1;
     }
 
-    .quest-row-count.best    { color: var(--led-green); text-shadow: 0 0 8px rgba(57,255,71,0.4); }
-    .quest-row-count.current-zero { color: var(--led-red); text-shadow: 0 0 8px rgba(255,40,40,0.3); }
-    .quest-row-count.current-live { color: var(--led-green); text-shadow: 0 0 8px rgba(57,255,71,0.4); }
+    .run-tracker-meta-count.best  { color: var(--led-green); text-shadow: 0 0 8px rgba(57,255,71,0.4); }
+    .run-tracker-meta-count.current { color: var(--led-red); text-shadow: 0 0 8px rgba(255,40,40,0.3); }
+    .run-tracker-meta-count.current-active { color: var(--led-green); text-shadow: 0 0 8px rgba(57,255,71,0.4); }
 
-    .quest-row-count .denom { font-size: 0.5em; opacity: 0.45; }
+    .run-tracker-meta-count .count-denom {
+      font-size: 0.55em;
+      opacity: 0.5;
+    }
 
-    .quest-row-icons {
+    .run-pips {
+      display: flex;
+      gap: 5px;
+      flex: 1;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
+
+    .run-pip {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 2px;
+      border: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 16px 20px;
-      overflow-x: auto;
-      flex: 1;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      position: relative;
     }
 
-    @media (max-width: 600px) {
-      .quest-row-icons { gap: 2px; padding: 12px 10px; }
+    @media (max-width: 480px) {
+      .run-pip { width: 22px; height: 22px; font-size: 8px; }
+      .run-pips { gap: 3px; }
+      .run-tracker-meta { width: 72px; }
+    }
+
+    .run-pip.filled-best {
+      background: var(--led-dim);
+      border-color: rgba(57,255,71,0.35);
+      color: var(--led-green);
+    }
+
+    .run-pip.filled-current {
+      background: var(--led-dim);
+      border-color: var(--led-green);
+      color: var(--led-green);
+      box-shadow: 0 0 6px rgba(57,255,71,0.2);
+    }
+
+    .run-pip.goal-marker {
+      border-color: var(--orange);
+      color: var(--orange);
+      background: var(--orange-dim);
+    }
+
+    .run-tracker-note {
+      padding: 14px 24px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+      background: #0d0d0d;
+      text-align: center;
     }
 
     .quest-callout {
@@ -755,7 +795,20 @@
         Every session is documented. The margin for error is zero.
       </p>
 
-      <div class="quest-rows" id="quest-rows" role="region" aria-label="Streak progress tracker"></div>
+      <div class="quest-tracker" id="quest-tracker" role="img" aria-label="Quest progress tracker showing best streak"></div>
+
+      <div class="quest-legend">
+        <span class="legend-item">
+          <span class="legend-dot made"></span>
+          Best run confirmed
+        </span>
+        <span class="legend-item">
+          <span class="legend-dot pending"></span>
+          Unconquered
+        </span>
+      </div>
+
+      <div class="run-tracker-block" id="run-tracker-block" role="region" aria-label="Streak progress tracker"></div>
 
       <div class="quest-callout" id="quest-callout">
         <span class="callout-stat" id="callout-stat">—</span>
@@ -995,97 +1048,214 @@
   document.getElementById('footer-sub').textContent =
     `Season One · ${stats.total} days · ${stats.makes} makes`;
 
-  // ── Quest tracker — two labeled rows of hoop icons ───────────────
+  // ── Quest tracker (10 segments) ───────────────────────────────────
 
+  const questEl = document.getElementById('quest-tracker');
   const GOAL = 10;
-  const svgNS = 'http://www.w3.org/2000/svg';
 
-  function makeHoopSVG(lit, isCurrent) {
+  for (let i = 1; i <= GOAL; i++) {
+    const lit = i <= stats.longestStreak;
+    const seg = document.createElement('div');
+    seg.className = 'hoop-segment';
+
+    // SVG hoop icon
+    const svgNS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(svgNS, 'svg');
     svg.setAttribute('viewBox', '0 0 64 72');
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     svg.setAttribute('class', 'hoop-icon');
     svg.setAttribute('aria-hidden', 'true');
 
-    function el(tag, attrs) {
-      const e = document.createElementNS(svgNS, tag);
-      Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
-      return e;
-    }
-
     if (lit) {
-      const ballColor  = isCurrent ? '#39ff47' : '#ff6a00';
-      const lineColor  = '#39ff47';
-      const rimColor   = isCurrent ? '#39ff47' : '#ff6a00';
+      // Backboard
+      const board = document.createElementNS(svgNS, 'rect');
+      board.setAttribute('x', '18'); board.setAttribute('y', '2');
+      board.setAttribute('width', '28'); board.setAttribute('height', '20');
+      board.setAttribute('rx', '1');
+      board.setAttribute('fill', '#0a2a0d');
+      board.setAttribute('stroke', '#39ff47');
+      board.setAttribute('stroke-width', '1.5');
+      svg.appendChild(board);
 
-      svg.appendChild(el('rect',    { x:'18', y:'2', width:'28', height:'20', rx:'1', fill:'#0a2a0d', stroke:lineColor, 'stroke-width':'1.5' }));
-      svg.appendChild(el('rect',    { x:'22', y:'5', width:'20', height:'13', rx:'0.5', fill:'none', stroke:lineColor, 'stroke-width':'0.8' }));
-      svg.appendChild(el('rect',    { x:'30', y:'22', width:'4', height:'14', fill:lineColor }));
-      svg.appendChild(el('ellipse', { cx:'32', cy:'36', rx:'14', ry:'4', fill:'none', stroke:rimColor, 'stroke-width':'2.5' }));
+      // Inner box
+      const inner = document.createElementNS(svgNS, 'rect');
+      inner.setAttribute('x', '22'); inner.setAttribute('y', '5');
+      inner.setAttribute('width', '20'); inner.setAttribute('height', '13');
+      inner.setAttribute('rx', '0.5');
+      inner.setAttribute('fill', 'none');
+      inner.setAttribute('stroke', '#39ff47');
+      inner.setAttribute('stroke-width', '0.8');
+      svg.appendChild(inner);
+
+      // Pole
+      const pole = document.createElementNS(svgNS, 'rect');
+      pole.setAttribute('x', '30'); pole.setAttribute('y', '22');
+      pole.setAttribute('width', '4'); pole.setAttribute('height', '14');
+      pole.setAttribute('fill', '#39ff47');
+      svg.appendChild(pole);
+
+      // Rim
+      const rim = document.createElementNS(svgNS, 'ellipse');
+      rim.setAttribute('cx', '32'); rim.setAttribute('cy', '36');
+      rim.setAttribute('rx', '14'); rim.setAttribute('ry', '4');
+      rim.setAttribute('fill', 'none');
+      rim.setAttribute('stroke', '#ff6a00');
+      rim.setAttribute('stroke-width', '2.5');
+      svg.appendChild(rim);
+
+      // Net lines
       for (let n = 0; n < 5; n++) {
         const nx = 20 + n * 6;
-        svg.appendChild(el('line', { x1:nx, y1:'36', x2:nx+(n-2)*1.5, y2:'54', stroke:lineColor, 'stroke-width':'0.8', opacity:'0.6' }));
+        const line = document.createElementNS(svgNS, 'line');
+        line.setAttribute('x1', String(nx)); line.setAttribute('y1', '36');
+        line.setAttribute('x2', String(nx + (n - 2) * 1.5)); line.setAttribute('y2', '54');
+        line.setAttribute('stroke', '#39ff47');
+        line.setAttribute('stroke-width', '0.8');
+        line.setAttribute('opacity', '0.6');
+        svg.appendChild(line);
       }
-      svg.appendChild(el('line',   { x1:'22', y1:'54', x2:'42', y2:'54', stroke:lineColor, 'stroke-width':'0.8', opacity:'0.6' }));
-      svg.appendChild(el('circle', { cx:'32', cy:'34', r:'8', fill:ballColor }));
-      svg.appendChild(el('circle', { cx:'32', cy:'34', r:'9', fill:'none', stroke:ballColor, 'stroke-width':'1', opacity:'0.3' }));
+      // Net bottom
+      const nb = document.createElementNS(svgNS, 'line');
+      nb.setAttribute('x1', '22'); nb.setAttribute('y1', '54');
+      nb.setAttribute('x2', '42'); nb.setAttribute('y2', '54');
+      nb.setAttribute('stroke', '#39ff47');
+      nb.setAttribute('stroke-width', '0.8');
+      nb.setAttribute('opacity', '0.6');
+      svg.appendChild(nb);
+
+      // Ball
+      const ball = document.createElementNS(svgNS, 'circle');
+      ball.setAttribute('cx', '32'); ball.setAttribute('cy', '34');
+      ball.setAttribute('r', '8');
+      ball.setAttribute('fill', '#ff6a00');
+      svg.appendChild(ball);
+
+      // Ball glow
+      const glow = document.createElementNS(svgNS, 'circle');
+      glow.setAttribute('cx', '32'); glow.setAttribute('cy', '34');
+      glow.setAttribute('r', '9');
+      glow.setAttribute('fill', 'none');
+      glow.setAttribute('stroke', '#ff6a00');
+      glow.setAttribute('stroke-width', '1');
+      glow.setAttribute('opacity', '0.3');
+      svg.appendChild(glow);
+
     } else {
-      svg.appendChild(el('rect',    { x:'18', y:'2', width:'28', height:'20', rx:'1', fill:'#111', stroke:'#2a2a2a', 'stroke-width':'1.5' }));
-      svg.appendChild(el('rect',    { x:'30', y:'22', width:'4', height:'14', fill:'#222' }));
-      svg.appendChild(el('ellipse', { cx:'32', cy:'36', rx:'14', ry:'4', fill:'none', stroke:'#2a2a2a', 'stroke-width':'2' }));
-      const q = el('text', { x:'32', y:'66', 'text-anchor':'middle', 'font-family':'Share Tech Mono, monospace', 'font-size':'10', fill:'#2a2a2a' });
+      // Dark / unconquered
+      const board = document.createElementNS(svgNS, 'rect');
+      board.setAttribute('x', '18'); board.setAttribute('y', '2');
+      board.setAttribute('width', '28'); board.setAttribute('height', '20');
+      board.setAttribute('rx', '1');
+      board.setAttribute('fill', '#111');
+      board.setAttribute('stroke', '#2a2a2a');
+      board.setAttribute('stroke-width', '1.5');
+      svg.appendChild(board);
+
+      const pole = document.createElementNS(svgNS, 'rect');
+      pole.setAttribute('x', '30'); pole.setAttribute('y', '22');
+      pole.setAttribute('width', '4'); pole.setAttribute('height', '14');
+      pole.setAttribute('fill', '#222');
+      svg.appendChild(pole);
+
+      const rim = document.createElementNS(svgNS, 'ellipse');
+      rim.setAttribute('cx', '32'); rim.setAttribute('cy', '36');
+      rim.setAttribute('rx', '14'); rim.setAttribute('ry', '4');
+      rim.setAttribute('fill', 'none');
+      rim.setAttribute('stroke', '#2a2a2a');
+      rim.setAttribute('stroke-width', '2');
+      svg.appendChild(rim);
+
+      // Question mark
+      const q = document.createElementNS(svgNS, 'text');
+      q.setAttribute('x', '32'); q.setAttribute('y', '66');
+      q.setAttribute('text-anchor', 'middle');
+      q.setAttribute('font-family', 'Share Tech Mono, monospace');
+      q.setAttribute('font-size', '10');
+      q.setAttribute('fill', '#2a2a2a');
       q.textContent = '?';
       svg.appendChild(q);
     }
-    return svg;
+
+    const label = document.createElement('span');
+    label.className = 'hoop-num ' + (lit ? 'lit' : 'dark-label');
+    label.textContent = i;
+
+    seg.appendChild(svg);
+    seg.appendChild(label);
+    questEl.appendChild(seg);
   }
 
-  function buildQuestRow(labelText, count, countColorClass, isCurrent) {
-    const row = document.createElement('div');
-    row.className = 'quest-row';
-
-    const labelDiv = document.createElement('div');
-    labelDiv.className = 'quest-row-label';
-    labelDiv.innerHTML = `
-      <span class="quest-row-name">${labelText}</span>
-      <span class="quest-row-count ${countColorClass}">${count}<span class="denom"> / ${GOAL}</span></span>
-    `;
-
-    const iconsDiv = document.createElement('div');
-    iconsDiv.className = 'quest-row-icons';
-
-    for (let i = 1; i <= GOAL; i++) {
-      const lit = i <= count;
-      const seg = document.createElement('div');
-      seg.className = 'hoop-segment';
-      seg.setAttribute('aria-label', `Shot ${i}: ${lit ? 'made' : 'not yet'}`);
-      seg.appendChild(makeHoopSVG(lit, isCurrent));
-      const num = document.createElement('span');
-      num.className = 'hoop-num ' + (lit ? 'lit' : 'dark-label');
-      num.textContent = i;
-      seg.appendChild(num);
-      iconsDiv.appendChild(seg);
-    }
-
-    row.appendChild(labelDiv);
-    row.appendChild(iconsDiv);
-    return row;
-  }
-
-  const questRows = document.getElementById('quest-rows');
-  const curColorClass = stats.currentStreak > 0 ? 'current-live' : 'current-zero';
-  questRows.appendChild(buildQuestRow('Best run',     stats.longestStreak, 'best',         false));
-  questRows.appendChild(buildQuestRow('Current run',  stats.currentStreak, curColorClass,  true));
-
-  // Callout — how many times was the best streak reached and when
+  // Callout — find how many times best streak was hit and at which days
   const bestRuns = stats.streakRuns.filter(r => r.length === stats.longestStreak);
   const calloutStat = document.getElementById('callout-stat');
   const calloutNote = document.getElementById('callout-note');
 
   if (bestRuns.length > 0) {
-    calloutStat.textContent = `${stats.longestStreak} of 10 — reached ${bestRuns.length}×`;
-    const runDesc = bestRuns.map(r => `days ${r.start}–${r.start + r.length - 1}`).join(' and ');
-    calloutNote.textContent = `Personal best: ${runDesc}. The next shot, on each occasion, was a miss.`;
+    calloutStat.textContent =
+      `${stats.longestStreak} of 10 — reached ${bestRuns.length}× `;
+    const runDesc = bestRuns.map(r =>
+      `days ${r.start}–${r.start + r.length - 1}`
+    ).join(' and ');
+    calloutNote.textContent =
+      `Personal best: ${runDesc}. The next shot, on each occasion, was a miss.`;
   }
+
+  // ── Run tracker (best run + current run pip rows) ─────────────────
+
+  (function buildRunTracker() {
+    const block = document.getElementById('run-tracker-block');
+    const GOAL = 10;
+
+    function makeRow(labelText, count, pipClass, countClass) {
+      const row = document.createElement('div');
+      row.className = 'run-tracker-row';
+
+      const meta = document.createElement('div');
+      meta.className = 'run-tracker-meta';
+      meta.innerHTML = `
+        <span class="run-tracker-meta-label">${labelText}</span>
+        <span class="run-tracker-meta-count ${countClass}">${count}<span class="count-denom"> / ${GOAL}</span></span>
+      `;
+
+      const pips = document.createElement('div');
+      pips.className = 'run-pips';
+
+      for (let i = 1; i <= GOAL; i++) {
+        const pip = document.createElement('div');
+        pip.setAttribute('aria-label', `Shot ${i} of ${GOAL}`);
+        if (i <= count) {
+          pip.className = `run-pip ${pipClass}`;
+          pip.textContent = i;
+        } else if (i === GOAL) {
+          pip.className = 'run-pip goal-marker';
+          pip.textContent = '★';
+        } else {
+          pip.className = 'run-pip';
+          pip.textContent = i;
+        }
+        pips.appendChild(pip);
+      }
+
+      row.appendChild(meta);
+      row.appendChild(pips);
+      return row;
+    }
+
+    block.appendChild(makeRow('Best run', stats.longestStreak, 'filled-best', 'best'));
+    block.appendChild(makeRow('Current run', stats.currentStreak, 'filled-current',
+      stats.currentStreak > 0 ? 'current-active' : 'current'));
+
+    const note = document.createElement('div');
+    note.className = 'run-tracker-note';
+    if (stats.currentStreak === 0) {
+      note.textContent = 'Current streak reset. The record stands at ' + stats.longestStreak + '.';
+    } else if (stats.currentStreak === stats.longestStreak) {
+      note.textContent = `Matching the personal best. ${GOAL - stats.currentStreak} to go.`;
+    } else {
+      note.textContent = `Active streak: ${stats.currentStreak} consecutive. ${GOAL - stats.currentStreak} to go.`;
+    }
+    block.appendChild(note);
+  })();
 
   // ── Season grid ───────────────────────────────────────────────────
 
