@@ -53,6 +53,7 @@ const SHOTS = [
   { day: 40, date: "6/28/2026", result: "make", note: "" },
   { day: 41, date: "6/29/2026", result: "miss", note: "" },
   { day: 42, date: "6/30/2026", result: "miss", note: "" },
+  { day: 43, date: "7/1/2026", result: "make", note: "" },
   // ↑ add the next day below this line, e.g.:
   // { day: 42, date: "6/30/2026", result: "make", note: "" },
 ];
